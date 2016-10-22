@@ -3,10 +3,6 @@ date_default_timezone_set('Asia/Bangkok');
 include_once '/admin/dbconfig.php';
 include "/admin/resize-class.php";
 
-$stmt_s = $DB_con->prepare("SELECT a.id,a.prices, a.tran_time, a.tran_company,a.tran_enable,b.c_main_id,a.vichicle_type, b.c_title, (SELECT s.c_title FROM menu as s
-          WHERE s.c_id=a.destinations) as destinations FROM transportation as a LEFT JOIN menu as b ON b.c_id=a.tran_company ORDER BY b.c_title");
-$stmt_s->execute();
-
 ?>
 
 <!DOCTYPE html>
