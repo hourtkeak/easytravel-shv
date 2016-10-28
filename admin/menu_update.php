@@ -9,7 +9,7 @@ $t_parent =$_REQUEST['t_parent'];
 $t_menu_headline = $_REQUEST['t_menu_headline'];
 $menu_desc = $_REQUEST['menu_desc'];
 if (isset($_REQUEST['display'])) {	$display = 1; }else{ $display = 0;}
-if($_REQUEST['t_parent']=="parent"){ $c_type = 1; $t_main_id =""; }else{$c_type = 2; $t_main_id = $t_parent;}
+if($_REQUEST['t_parent']=="parent"){ $c_type = 1; $t_main_id=0; }else{$c_type = 2; $t_main_id = $t_parent;}
 $t_ordering = $_REQUEST['t_ordering'];
 
 if($_FILES["img_menu"]["name"]!=""){

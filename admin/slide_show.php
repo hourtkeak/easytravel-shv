@@ -1,5 +1,6 @@
 <?php 
 include_once 'upload_images.php';
+if(@$_REQUEST['s_link']==""){@$_REQUEST['s_link']='#';}
 	
  	if(@$_REQUEST['action']=="Add slide"){
  		
@@ -8,12 +9,11 @@ include_once 'upload_images.php';
  		$img_smg_l=uploadImage($target_dir_l, 'img_slide');
  		$img_slide = $_FILES['img_slide']['name'];
 
- 		$stmt_img = $DB_con -> prepare("INSERT INTO package_tours_slide(s_title, s_description, s_img, id_package, ordering) 
- 									VALUES (:slide_title, :slide_desc, :img_slide, :package_link, :ordering)");
+ 		$stmt_img = $DB_con -> prepare("INSERT INTO package_tours_slide(s_title, s_description, s_img, link, ordering, type) 
+ 									VALUES (:slide_title, :slide_desc, :img_slide, :s_link, :ordering, :type)");
  		
  		$stmt_img -> execute (array(':slide_title'=>$_REQUEST['slide_title'], ':slide_desc' => $_REQUEST['slide_desc'], 
- 										':img_slide' => $img_slide, ':package_link' => $_REQUEST["package_link"]
- 										, ':ordering'=> $_REQUEST['ordering']));
+ 										':img_slide' => $img_slide, ':s_link' => $_REQUEST["s_link"], ':ordering'=> $_REQUEST['ordering'], ':type'=> $_REQUEST['type_sp']));
 
  	}elseif(@$_REQUEST['action'] == "edit") {
 
@@ -31,16 +31,17 @@ include_once 'upload_images.php';
 
  		if($img_slide!=""){
  			$stmt_img = $DB_con -> prepare("UPDATE package_tours_slide SET s_title=:slide_title, 
- 										s_description=:slide_desc, s_img=:img_slide, id_package=:package_link, ordering=:ordering WHERE slide_id=:s_id"); 
+ 										s_description=:slide_desc, s_img=:img_slide, link=:s_link, ordering=:ordering, type =:type_sp WHERE slide_id=:s_id"); 
  							
  			$stmt_img -> execute (array(':slide_title'=>$_REQUEST['slide_title'], ':slide_desc' => $_REQUEST['slide_desc'], 
- 										':img_slide' => $img_slide, ':package_link' => $_REQUEST["package_link"], ':s_id' => $_REQUEST['s_id'], ':ordering'=>  $_REQUEST['ordering'] ));
+ 										':img_slide' => $img_slide, ':s_link' => $_REQUEST["s_link"], ':s_id' => $_REQUEST['s_id'], ':ordering'=>  $_REQUEST['ordering'], ':type_sp'=>$_REQUEST['type_sp'] ));
  		
  		}else{
  			$stmt_img = $DB_con -> prepare("UPDATE package_tours_slide SET s_title=:slide_title, 
- 										s_description=:slide_desc, id_package=:package_link, ordering=:ordering WHERE slide_id=:s_id"); 
+ 			s_description=:slide_desc, link=:s_link, ordering=:ordering, type=:type_sp WHERE slide_id=:s_id"); 
  							
- 			$stmt_img -> execute (array(':slide_title'=>$_REQUEST['slide_title'], ':slide_desc' => $_REQUEST['slide_desc'], ':package_link' => $_REQUEST["package_link"], ':s_id' => $_REQUEST['s_id'], ':ordering'=>  $_REQUEST['ordering'] ));
+ 			$stmt_img -> execute (array(':slide_title'=>$_REQUEST['slide_title'], ':slide_desc' => $_REQUEST['slide_desc'], 
+ 				':s_link' => $_REQUEST["s_link"], ':s_id' => $_REQUEST['s_id'], ':ordering'=>  $_REQUEST['ordering'], ':type_sp'=>$_REQUEST['type_sp']));
  		}
  		
  	}elseif (isset($_REQUEST['action']) && $_REQUEST['action']=="delete") {
@@ -54,10 +55,9 @@ include_once 'upload_images.php';
 	<div class="col-md-6">
 		<div class="box box-solid box-primary ">
 		  <div class="box-header with-border">
-		    <h3 class="box-title">Add Package to Slide</h3>
+		    <h3 class="box-title">Add Slide / Promotions</h3>
 		    <div class="box-tools pull-right">
-		      <!-- Buttons, labels, and many other things can be placed here! -->
-		      <!-- Here is a label for example -->
+		      <a type="button" class="btn btn-warning" href="sr-admin.php?page=slide_show">Add</a>
 		    </div><!-- /.box-tools -->
 		  </div><!-- /.box-header -->
 		  <div class="box-body">
@@ -89,22 +89,34 @@ include_once 'upload_images.php';
 		         </div>
 
 		         <div class="form-group">
-				    <label>Link to package:</label>
-				    <select class="form-control" name="package_link">
-				    	<option>SELECT TOURS</option>
-				       <?php 
-				       		$stmt_link  = $DB_con->prepare("SELECT p_id, p_title FROM package_tours order by p_id DESC");
-				       		$stmt_link -> execute();
-
-				       		while($rs_link = $stmt_link -> fetch(PDO::FETCH_ASSOC)){
-				       	?>
-				       		<option value="<?php echo $rs_link['p_id'];?>"><?php echo $rs_link['p_title']; ?></option>
-
-				       	<?php } ?>
-				     </select>
+				    <label>Link</label>
+				    <input type="text" class="form-control" name="s_link" placeholder="Enter ..." value="<?php echo @$rs_slide['link']; ?>">
+				   	
 				</div>
 				<div class="form-group">
 					<input type="number" class="form-control" name="ordering" value="<?php echo @$rs_slide['ordering']; ?>">
+				</div>
+
+				<div class="form-group">
+					<?php if(@$rs_slide['type']==1){ ?>
+
+					<div class="radio"><label><input type="radio" name="type_sp" value="1" checked>Slide Show</label></div>
+					<div class="radio"><label><input type="radio" name="type_sp" value="2">Promotions</label></div>
+					<?php 
+						}else if(@$rs_slide['type']==2){
+					?>
+						<div class="radio"><label><input type="radio" name="type_sp" value="1" >Slide Show</label></div>
+						<div class="radio"><label><input type="radio" name="type_sp" value="2" checked>Promotions</label></div>
+					<?php
+					}else{
+					?>
+						<div class="radio"><label><input type="radio" name="type_sp" value="1">Slide Show</label></div>
+						<div class="radio"><label><input type="radio" name="type_sp" value="2">Promotions</label></div>
+
+					<?php 
+
+					}?>
+
 				</div>
 				<input type="hidden" name="s_id" value="<?php echo @$rs_slide['slide_id'];?>">
 		  </div><!-- /.box-body -->
@@ -138,8 +150,12 @@ include_once 'upload_images.php';
                 ?>​
                 <tr>
                   	<td><?php echo $rs_slide_list['slide_id'];?></td>
-                 	<td><?php echo $rs_slide_list['s_title'];?></td>
+                 	<td>
+                 		<?php echo $rs_slide_list['s_title'];?><br> Type:
+                 		<?php if($rs_slide_list['type']==1){echo 'slide';}else{echo 'Promotion';}?>
+                 	</td>
                  	<td><?php echo $rs_slide_list['ordering'];?></td>
+
                   	<td>
                    		<img src="img/uploads/<?php echo $rs_slide_list['s_img']; ?>" class="photo_in_list">
                  	</td>

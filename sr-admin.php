@@ -175,12 +175,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </ul>
             </li>
 
+            <li class="treeview">
+              <a href="sr-admin.php?page=slide_show"><i class="fa fa-link"></i> <span>Slide/Promotions</span></a>
+             
+            </li>
+
              <li class="treeview">
               <a href="#"><i class="fa fa-link"></i> <span>PACKAGE TOURS</span> <i class="fa fa-angle-left pull-right"></i></a>
               <ul class="treeview-menu">
                 <li><a href="sr-admin.php?page=package_tours_list">List Package Tours</a></li>
                 <li><a href="sr-admin.php?page=add_package_tours">Add Packages Tours</a></li>
-                 <li><a href="sr-admin.php?page=slide_show">Slide</a></li>
               </ul>
             </li>
 
